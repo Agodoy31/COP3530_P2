@@ -1,0 +1,14 @@
+# Prerequisites
+*.d
+# Compiled Object files
+*.out
+*.obj
+*.o
+# Executables
+*.exe
+# IDE and Build folders
+.vs/
+out/
+build/
+CMakeCache.txt
+CMakeFiles/
