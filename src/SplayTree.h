@@ -27,6 +27,7 @@ struct SplayNode {
 };
 
 class SplayTree {
+    // Everything is public for testing purposes. 
 public:
     SplayNode* root;
     int totalNodes;
