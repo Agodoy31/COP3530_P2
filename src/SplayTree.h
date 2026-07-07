@@ -27,7 +27,6 @@ struct SplayNode {
 };
 
 class SplayTree {
-// private:
 public:
     SplayNode* root;
     int totalNodes;
@@ -35,8 +34,8 @@ public:
 
     void leftRotate(SplayNode* x);
     void rightRotate(SplayNode* x);
+    void splay(SplayNode* x);
 
-// public:
     SplayTree();
 
     int getNodesTraversed();
