@@ -17,20 +17,20 @@ add_executable(Main
     src/main.cpp 
     src/SplayTree.cpp
     src/SkipList.cpp
-)
+ )
 
 # Splay Tree Catch2 Unit Tests
 add_executable(TestSplay 
     test/test_splay.cpp 
     src/SplayTree.cpp 
-)
+ ")
 target_link_libraries(TestSplay PRIVATE Catch2::Catch2WithMain)
 
 # Skip List Catch2 Unit Tests
 add_executable(TestSkipList 
     test/test_skiplist.cpp
     src/SkipList.cpp 
-)
+ )
 target_link_libraries(TestSkipList PRIVATE Catch2::Catch2WithMain)
 
 # Menu & Full Integration Tests
@@ -38,5 +38,5 @@ add_executable(TestMenu
     test/test_menu.cpp 
     src/SplayTree.cpp
     src/SkipList.cpp 
-)
+ )
 target_link_libraries(TestMenu PRIVATE Catch2::Catch2WithMain)
