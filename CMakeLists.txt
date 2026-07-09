@@ -16,7 +16,7 @@ FetchContent_MakeAvailable(Catch2)
 add_executable(Main 
     src/main.cpp 
     src/SplayTree.cpp
-    src/SkipList.cpp
+    src/SkipList.cpp src/SkipList.h
 )
 
 # Splay Tree Catch2 Unit Tests
