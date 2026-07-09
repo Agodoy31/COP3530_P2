@@ -23,7 +23,7 @@ add_executable(Main
 add_executable(TestSplay 
     test/test_splay.cpp 
     src/SplayTree.cpp 
- ")
+ )
 target_link_libraries(TestSplay PRIVATE Catch2::Catch2WithMain)
 
 # Skip List Catch2 Unit Tests
