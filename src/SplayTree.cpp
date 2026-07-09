@@ -151,3 +151,142 @@ void SplayTree::splay(SplayNode* x) {
         }
     }
 }
+
+/*
+ * Summary: Destructor to free allocated memory
+ */
+SplayTree::~SplayTree() {
+    destroyTree(root);
+}
+
+void SplayTree::destroyTree(SplayNode* node) {
+    if (node == nullptr) return;
+    destroyTree(node->left);
+    destroyTree(node->right);
+    delete node;
+}
+
+/*
+ * Summary: Inserts a new patient record into the tree and splays it all the way up to root
+ */
+void SplayTree::insert(int id, short a, char g, std::string bType, std::string cond,
+                       std::string date, std::string doc, std::string hosp,
+                       std::string ins, double bill) {
+
+    SplayNode* newNode = new SplayNode(id, a, g, bType, cond, date, doc, hosp, ins, bill);
+    totalNodes++;
+
+    if (root == nullptr) {
+        root = newNode;
+        return;
+    }
+
+    SplayNode* curr = root;
+    SplayNode* parent = nullptr;
+
+    // Standard BST insertion
+    while (curr != nullptr) {
+        parent = curr;
+        nodesTraversed++;
+        if (a < curr->age) {
+            curr = curr->left;
+        } else {
+            // Duplicate ages go right initially
+            curr = curr->right;
+        }
+    }
+
+
+    newNode->parent = parent;
+    if (a < parent->age) {
+        parent->left = newNode;
+    } else {
+        parent->right = newNode;
+    }
+
+    // Bubble the inserted node to the root
+    splay(newNode);
+}
+
+/*
+ * Summary: Searches for all patients with an exact age. Splays the first match found.
+ */
+std::vector<SplayNode*> SplayTree::searchAge(short targetAge) {
+    std::vector<SplayNode*> results;
+    SplayNode* curr = root;
+    SplayNode* match = nullptr;
+
+    // Find the first occurrence to splay it
+    while (curr != nullptr) {
+        nodesTraversed++;
+        if (targetAge == curr->age) {
+            match = curr;
+            break;
+        } else if (targetAge < curr->age) {
+            curr = curr->left;
+        } else {
+            curr = curr->right;
+        }
+    }
+
+    if (match != nullptr) {
+        splay(match);
+        // Extract all duplicates via traversal
+        searchAgeHelper(root, targetAge, results);
+    }
+
+    return results;
+
+}
+
+void SplayTree::searchAgeHelper(SplayNode* node, short targetAge, std::vector<SplayNode*>& results) {
+    if (node == nullptr) return;
+
+    nodesTraversed++;
+
+    // Check left subtree if target could be there
+    if (targetAge <= node->age) {
+        searchAgeHelper(node->left, targetAge, results);
+    }
+
+    // Process exact match
+    if (targetAge == node->age) {
+        results.push_back(node);
+    }
+
+    // Check right subtree if target could be there
+    if (targetAge >= node->age) {
+        searchAgeHelper(node->right, targetAge, results);
+    }
+}
+
+
+/*
+ * Summary: Performs an inorder traversal to collect nodes within an age range
+ */
+std::vector<SplayNode*> SplayTree::searchAgeRange(short minAge, short maxAge) {
+    std::vector<SplayNode*> results;
+    searchAgeRangeHelper(root, minAge, maxAge, results);
+    return results;
+}
+
+void SplayTree::searchAgeRangeHelper(SplayNode* node, short minAge, short maxAge, std::vector<SplayNode*>& results) {
+    if (node == nullptr) return;
+
+    nodesTraversed++;
+
+    // Traverse left if there is potential for valid ages
+    if (minAge <= node->age) {
+        searchAgeRangeHelper(node->left, minAge, maxAge, results);
+    }
+
+    // Include node if it falls within the range
+    if (node->age >= minAge && node->age <= maxAge) {
+        results.push_back(node);
+    }
+
+    // Traverse right if there is potential for valid ages
+    if (maxAge >= node->age) {
+        searchAgeRangeHelper(node->right, minAge, maxAge, results);
+    }
+}

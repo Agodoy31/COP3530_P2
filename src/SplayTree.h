@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 struct SplayNode {
     int patientID;
@@ -38,8 +39,19 @@ public:
     void splay(SplayNode* x);
 
     SplayTree();
+    ~SplayTree();
 
     int getNodesTraversed();
     void resetNodesTraversed();
     size_t getMemoryUsageInBytes();
+
+    void insert(int id, short a, char g, std::string bType, std::string cond, std::string date, std::string doc, std::string hosp, std::string insuranceProvider, double bill);
+
+    std::vector<SplayNode*> searchAge(short targetAge);
+    std::vector<SplayNode*> searchAgeRange(short minAge, short maxAge);
+
+    //Recursive helpers
+    void destroyTree(SplayNode* node);
+    void searchAgeHelper(SplayNode* node, short targetAge, std::vector<SplayNode*> &results);
+    void searchAgeRangeHelper(SplayNode* node, short minAge, short maxAge, std::vector<SplayNode*> &results);
 };
