@@ -1,4 +1,5 @@
 // SkipList.h
+#pragma once
 #include <string>
 #include <vector>
 #include <iostream>
@@ -51,7 +52,7 @@ private:
     //function that assigns a random level for a new node
     int random_level()
     {
-        int new_level = 0;
+        int new_level = 1;
         while (((float)rand() / RAND_MAX ) < 0.5f && new_level <max_level)
         {
             new_level++;
@@ -169,6 +170,19 @@ public:
             curr = curr->forward[0];
         }
         cout << " null" ;
+    }
+
+    //destructor
+
+    ~SkipList()
+    {
+        Node* curr = head;
+        while (curr)
+        {
+            Node* next = curr->forward[0];
+            delete curr;
+            curr = next;
+        }
     }
 
 
