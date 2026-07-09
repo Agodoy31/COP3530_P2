@@ -1,5 +1,6 @@
 // SkipList.h
 #pragma once
+#include "Patient.h"
 #include <string>
 #include <vector>
 #include <iostream>
@@ -11,20 +12,6 @@ using namespace std;
 // created before pass-in.** Search queries allow for range based and single-age queries.
 
 
-//define Patient Struct with patient info
-struct Patient
-{
-    int patient_id;
-    int age;
-    string gender;
-    string blood_type;
-    string condition;
-    string date_of_admission;
-    string doctor;
-    string hospital;
-    string insurance_provider;
-    double billing_amount;
-};
 
 //max height of list set to 16 (around log base 2 of 100k)
 //probability for coin flip set to 0.5

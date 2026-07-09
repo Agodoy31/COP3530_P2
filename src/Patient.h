@@ -1,12 +1,11 @@
 //
 // Created by Sai Rajan on 7/9/26.
 //
-# pragma once
-#include <string>
-using namespace std;
+
 #ifndef MEDICALDATABASEPROJECT_PATIENT_H
 #define MEDICALDATABASEPROJECT_PATIENT_H
-
+#include <string>
+using namespace std;
 //define Patient Struct with patient info for reference
 struct Patient
 {
