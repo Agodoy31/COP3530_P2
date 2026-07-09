@@ -22,7 +22,7 @@ struct Patient
     string doctor;
     string hospital;
     string insurance_provider;
-    int billing_amount;
+    double billing_amount;
 };
 
 //max height of list set to 16 (around log base 2 of 100k)
