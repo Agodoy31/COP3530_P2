@@ -169,11 +169,9 @@ void SplayTree::destroyTree(SplayNode* node) {
 /*
  * Summary: Inserts a new patient record into the tree and splays it all the way up to root
  */
-void SplayTree::insert(int id, short a, char g, std::string bType, std::string cond,
-                       std::string date, std::string doc, std::string hosp,
-                       std::string ins, double bill) {
+void SplayTree::insert(const Patient& p) {
 
-    SplayNode* newNode = new SplayNode(id, a, g, bType, cond, date, doc, hosp, ins, bill);
+    SplayNode* newNode = new SplayNode(p);
     totalNodes++;
 
     if (root == nullptr) {
@@ -188,19 +186,20 @@ void SplayTree::insert(int id, short a, char g, std::string bType, std::string c
     while (curr != nullptr) {
         parent = curr;
         nodesTraversed++;
-        if (a < curr->age) {
+        if (p.age < curr->patient.age) {
             curr = curr->left;
-        } else {
+        }
+        else {
             // Duplicate ages go right initially
             curr = curr->right;
         }
     }
 
-
     newNode->parent = parent;
-    if (a < parent->age) {
+    if (p.age < parent->patient.age) {
         parent->left = newNode;
-    } else {
+    }
+    else {
         parent->right = newNode;
     }
 
@@ -211,20 +210,22 @@ void SplayTree::insert(int id, short a, char g, std::string bType, std::string c
 /*
  * Summary: Searches for all patients with an exact age. Splays the first match found.
  */
-std::vector<SplayNode*> SplayTree::searchAge(short targetAge) {
-    std::vector<SplayNode*> results;
+std::vector<Patient> SplayTree::searchAge(short targetAge) {
+    std::vector<Patient> results;
     SplayNode* curr = root;
     SplayNode* match = nullptr;
 
     // Find the first occurrence to splay it
     while (curr != nullptr) {
         nodesTraversed++;
-        if (targetAge == curr->age) {
+        if (targetAge == curr->patient.age) {
             match = curr;
             break;
-        } else if (targetAge < curr->age) {
+        }
+        else if (targetAge < curr->patient.age) {
             curr = curr->left;
-        } else {
+        }
+        else {
             curr = curr->right;
         }
     }
@@ -236,57 +237,55 @@ std::vector<SplayNode*> SplayTree::searchAge(short targetAge) {
     }
 
     return results;
-
 }
 
-void SplayTree::searchAgeHelper(SplayNode* node, short targetAge, std::vector<SplayNode*>& results) {
+void SplayTree::searchAgeHelper(SplayNode* node, short targetAge, std::vector<Patient>& results) {
     if (node == nullptr) return;
 
     nodesTraversed++;
 
     // Check left subtree if target could be there
-    if (targetAge <= node->age) {
+    if (targetAge <= node->patient.age) {
         searchAgeHelper(node->left, targetAge, results);
     }
 
     // Process exact match
-    if (targetAge == node->age) {
-        results.push_back(node);
+    if (targetAge == node->patient.age) {
+        results.push_back(node->patient);
     }
 
     // Check right subtree if target could be there
-    if (targetAge >= node->age) {
+    if (targetAge >= node->patient.age) {
         searchAgeHelper(node->right, targetAge, results);
     }
 }
 
-
 /*
  * Summary: Performs an inorder traversal to collect nodes within an age range
  */
-std::vector<SplayNode*> SplayTree::searchAgeRange(short minAge, short maxAge) {
-    std::vector<SplayNode*> results;
+std::vector<Patient> SplayTree::searchAgeRange(short minAge, short maxAge) {
+    std::vector<Patient> results;
     searchAgeRangeHelper(root, minAge, maxAge, results);
     return results;
 }
 
-void SplayTree::searchAgeRangeHelper(SplayNode* node, short minAge, short maxAge, std::vector<SplayNode*>& results) {
+void SplayTree::searchAgeRangeHelper(SplayNode* node, short minAge, short maxAge, std::vector<Patient>& results) {
     if (node == nullptr) return;
 
     nodesTraversed++;
 
     // Traverse left if there is potential for valid ages
-    if (minAge <= node->age) {
+    if (minAge <= node->patient.age) {
         searchAgeRangeHelper(node->left, minAge, maxAge, results);
     }
 
     // Include node if it falls within the range
-    if (node->age >= minAge && node->age <= maxAge) {
-        results.push_back(node);
+    if (node->patient.age >= minAge && node->patient.age <= maxAge) {
+        results.push_back(node->patient);
     }
 
     // Traverse right if there is potential for valid ages
-    if (maxAge >= node->age) {
+    if (maxAge >= node->patient.age) {
         searchAgeRangeHelper(node->right, minAge, maxAge, results);
     }
 }
