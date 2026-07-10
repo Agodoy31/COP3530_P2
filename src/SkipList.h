@@ -35,6 +35,8 @@ class SkipList
 private:
     Node* head;
     int current_level;
+    int nodesTraversed = 0;
+
 
     //function that assigns a random level for a new node
     int random_level()
@@ -52,6 +54,16 @@ public:
     {
         head = new Node(-1, max_level);
     }
+    //getter and reset functions for nodes traversed counter
+    int get_nodes_traversed()
+    {
+        return nodesTraversed;
+    }
+
+    void reset_nodes_traversed()
+    {
+        nodesTraversed = 0;
+    }
 
     //inserts a patient to become a node in the list
     void insert(const Patient& P)
@@ -65,11 +77,13 @@ public:
             while (curr->forward[i]  && curr->forward[i]->age < P.age)
             {
                 curr = curr->forward[i];
+                nodesTraversed++;
             }
             update[i] = curr;
         }
 
         curr = curr->forward[0];
+        nodesTraversed++;
 
         //adds patient info to node with Patients information
         if (curr != nullptr && curr->age == P.age)
@@ -171,6 +185,8 @@ public:
             curr = next;
         }
     }
+
+
 
 
 
