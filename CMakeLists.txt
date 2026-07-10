@@ -16,20 +16,23 @@ FetchContent_MakeAvailable(Catch2)
 add_executable(Main 
     src/main.cpp 
     src/SplayTree.cpp
-    src/SkipList.cpp
+    src/SkipList.cpp src/SkipList.h
+        src/Patient.h
 )
 
 # Splay Tree Catch2 Unit Tests
 add_executable(TestSplay 
     test/test_splay.cpp 
-    src/SplayTree.cpp 
+    src/SplayTree.cpp
+        src/Patient.h
 )
 target_link_libraries(TestSplay PRIVATE Catch2::Catch2WithMain)
 
 # Skip List Catch2 Unit Tests
 add_executable(TestSkipList 
     test/test_skiplist.cpp
-    src/SkipList.cpp 
+    src/SkipList.cpp
+        src/Patient.h
 )
 target_link_libraries(TestSkipList PRIVATE Catch2::Catch2WithMain)
 
@@ -37,6 +40,7 @@ target_link_libraries(TestSkipList PRIVATE Catch2::Catch2WithMain)
 add_executable(TestMenu 
     test/test_menu.cpp 
     src/SplayTree.cpp
-    src/SkipList.cpp 
+    src/SkipList.cpp
+        src/Patient.h
 )
 target_link_libraries(TestMenu PRIVATE Catch2::Catch2WithMain)
