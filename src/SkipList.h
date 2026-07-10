@@ -77,13 +77,11 @@ public:
             while (curr->forward[i]  && curr->forward[i]->age < P.age)
             {
                 curr = curr->forward[i];
-                nodesTraversed++;
             }
             update[i] = curr;
         }
 
         curr = curr->forward[0];
-        nodesTraversed++;
 
         //adds patient info to node with Patients information
         if (curr != nullptr && curr->age == P.age)
@@ -124,11 +122,13 @@ public:
             while (curr->forward[i] && curr->forward[i]->age < age)
             {
                 curr = curr->forward[i];
+                nodesTraversed++;
             }
         }
 
         //once node is found check if age exists, if not returns empty patient vector
         curr = curr->forward[0];
+        nodesTraversed++;
 
         if (curr != nullptr && curr->age == age)
         {
@@ -147,9 +147,11 @@ public:
             while (curr->forward[i] && curr->forward[i]->age < age_lower)
             {
                 curr = curr->forward[i];
+                nodesTraversed++;
             }
         }
         curr = curr->forward[0];
+        nodesTraversed++;
         while (curr && curr->age <= age_higher)
         {
             for (const Patient& P : curr->patients)
@@ -157,6 +159,7 @@ public:
                 final.push_back(P);
             }
             curr = curr->forward[0];
+            nodesTraversed++;
         }
         return final;
     }
