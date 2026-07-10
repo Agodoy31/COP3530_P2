@@ -161,9 +161,32 @@ SplayTree::~SplayTree() {
 
 void SplayTree::destroyTree(SplayNode* node) {
     if (node == nullptr) return;
-    destroyTree(node->left);
-    destroyTree(node->right);
-    delete node;
+
+    SplayNode* curr = node;
+    while (curr != nullptr) {
+        // Traverse down to the leaves
+        if (curr->left != nullptr) {
+            curr = curr->left;
+        }
+        else if (curr->right != nullptr) {
+            curr = curr->right;
+        }
+        else {
+            // If it's a leaf, delete it and move back up to the parent
+            SplayNode* parent = curr->parent;
+            if (parent != nullptr) {
+                if (parent->left == curr) {
+                    parent->left = nullptr;
+                }
+                else {
+                    parent->right = nullptr;
+                }
+            }
+            delete curr;
+            curr = parent;
+        }
+    }
+    root = nullptr;
 }
 
 /*
