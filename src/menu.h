@@ -108,6 +108,7 @@ bool loadDataset(const std::string& filePath, SplayTree& splayTree, SkipList& sk
 
 void handleExactLookup(int targetAge, SplayTree& splayTree, SkipList& skipList) {
     splayTree.resetNodesTraversed();
+    skipList.reset_nodes_traversed();
 
     auto splayStart = std::chrono::high_resolution_clock::now();
     std::vector<Patient> splayResults = splayTree.searchAge(static_cast<short>(targetAge));
@@ -135,11 +136,13 @@ void handleExactLookup(int targetAge, SplayTree& splayTree, SkipList& skipList) 
     std::cout << "Splay Tree Search Time : " << splayDuration << " nanoseconds\n";
     std::cout << "Splay Nodes Traversed  : " << splayTree.getNodesTraversed() << "\n";
     std::cout << "Skip List Search Time  : " << skipDuration << " nanoseconds\n";
+    std::cout << "Skip List Nodes Traversed : " << skipList.get_nodes_traversed() << "\n";
     std::cout << "==================================================\n";
 }
 
 void handleRangeQuery(int minAge, int maxAge, SplayTree& splayTree, SkipList& skipList) {
     splayTree.resetNodesTraversed();
+    skipList.reset_nodes_traversed();
 
     auto splayStart = std::chrono::high_resolution_clock::now();
     std::vector<Patient> splayResults = splayTree.searchAgeRange(static_cast<short>(minAge), static_cast<short>(maxAge));
@@ -168,6 +171,7 @@ void handleRangeQuery(int minAge, int maxAge, SplayTree& splayTree, SkipList& sk
     std::cout << "Splay Tree Search Time : " << splayDuration << " nanoseconds\n";
     std::cout << "Splay Nodes Traversed  : " << splayTree.getNodesTraversed() << "\n";
     std::cout << "Skip List Search Time  : " << skipDuration << " nanoseconds\n";
+    std::cout << "Skip List Nodes Traversed : " << skipList.get_nodes_traversed() << "\n";
     std::cout << "==================================================\n";
 }
 
