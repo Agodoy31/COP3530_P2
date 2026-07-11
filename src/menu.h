@@ -6,6 +6,9 @@
 #include <sstream>
 #include <iostream>
 #include <chrono>
+#include "SplayTree.h"
+#include "SkipList.h"
+#include <algorithm>
 
 bool isValidFilePath(std::string& path) {
     if (path.starts_with('"') && path.ends_with('"') && path.length() >= 2) {
@@ -36,14 +39,14 @@ void displayMenu() {
     std::cout << "         HEALTHCARE DATABASE SYSTEM MENU\n";
     std::cout << "==================================================\n";
     std::cout << "1. Load Patient Dataset\n";
-    std::cout << "2. Exact Patient Lookup (by Patient ID)\n";
+    std::cout << "2. Exact Patient Lookup (by Age)\n";
     std::cout << "3. Demographic Range Query (by Age)\n";
     std::cout << "4. Exit\n";
     std::cout << "==================================================\n";
     std::cout << "Enter your choice (1-4): ";
 }
 
-bool loadDataset(const std::string& filePath) {
+bool loadDataset(const std::string& filePath, SplayTree& splayTree, SkipList& skipList) {
     std::ifstream file(filePath);
     if (!file.is_open()) {
         return false;
@@ -73,10 +76,20 @@ bool loadDataset(const std::string& filePath) {
         std::getline(ss, tempBilling, ',');
 
         try {
-            int id = std::stoi(tempID);
-            short age = static_cast<short>(std::stoi(tempAge));
-            char gender = tempGender.empty() ? 'U' : tempGender[0];
-            double billing = std::stod(tempBilling);
+            Patient p;
+            p.patient_id = std::stoi(tempID);
+            p.age = std::stoi(tempAge);
+            p.gender = tempGender;
+            p.blood_type = bloodType;
+            p.condition = condition;
+            p.date_of_admission = dateOfAdmission;
+            p.doctor = doctor;
+            p.hospital = hospital;
+            p.insurance_provider = insuranceProvider;
+            p.billing_amount = std::stod(tempBilling);
+
+            splayTree.insert(p);
+            skipList.insert(p);
 
             recordCount++;
         }
@@ -89,61 +102,83 @@ bool loadDataset(const std::string& filePath) {
     }
 
     file.close();
-    std::cout << "\nSuccessfully parsed and loaded " << recordCount << " patient records (Mocked)!\n";
+    std::cout << "\nSuccessfully parsed and loaded " << recordCount << " patient records into both data structures!\n";
     return true;
 }
 
-void handleExactLookup(int patientID) {
+void handleExactLookup(int targetAge, SplayTree& splayTree, SkipList& skipList) {
+    splayTree.resetNodesTraversed();
+    skipList.reset_nodes_traversed();
+
     auto splayStart = std::chrono::high_resolution_clock::now();
-    std::cout << "\n[Splay Tree Search] Searching for Patient ID: " << patientID << "...\n";
+    std::vector<Patient> splayResults = splayTree.searchAge(static_cast<short>(targetAge));
     auto splayEnd = std::chrono::high_resolution_clock::now();
     auto splayDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(splayEnd - splayStart).count();
 
     auto skipStart = std::chrono::high_resolution_clock::now();
-    std::cout << "[Skip List Search] Searching for Patient ID: " << patientID << "...\n";
+    std::vector<Patient> skipResults = skipList.search_age(targetAge);
     auto skipEnd = std::chrono::high_resolution_clock::now();
     auto skipDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(skipEnd - skipStart).count();
 
-    std::cout << "\n[Patient Record Found]\n";
-    std::cout << "ID: " << patientID << "\n";
-    std::cout << "Age: 32\n";
-    std::cout << "Gender: Male\n";
-    std::cout << "Condition: COPD\n";
-    std::cout << "Billing Amount: $29627.00\n";
+    std::cout << "\n[Patient Records Found: " << splayResults.size() << "]\n";
+    int printLimit = std::min((int)splayResults.size(), 5);
+    for(int i = 0; i < printLimit; i++) {
+        std::cout << "ID: " << splayResults[i].patient_id << " | Age: " << splayResults[i].age
+                  << " | Gender: " << splayResults[i].gender << " | Condition: " << splayResults[i].condition << "\n";
+    }
+    if (splayResults.size() > 5) {
+        std::cout << "... and " << splayResults.size() - 5 << " more patients.\n";
+    }
 
     std::cout << "\n==================================================\n";
     std::cout << "             PERFORMANCE COMPARISON\n";
     std::cout << "==================================================\n";
     std::cout << "Splay Tree Search Time : " << splayDuration << " nanoseconds\n";
+    std::cout << "Splay Nodes Traversed  : " << splayTree.getNodesTraversed() << "\n";
     std::cout << "Skip List Search Time  : " << skipDuration << " nanoseconds\n";
+    std::cout << "Skip List Nodes Traversed : " << skipList.get_nodes_traversed() << "\n";
     std::cout << "==================================================\n";
 }
 
-void handleRangeQuery(int minAge, int maxAge) {
+void handleRangeQuery(int minAge, int maxAge, SplayTree& splayTree, SkipList& skipList) {
+    splayTree.resetNodesTraversed();
+    skipList.reset_nodes_traversed();
+
     auto splayStart = std::chrono::high_resolution_clock::now();
-    std::cout << "\n[Splay Tree Search] Querying patients between ages " << minAge << " and " << maxAge << "...\n";
+    std::vector<Patient> splayResults = splayTree.searchAgeRange(static_cast<short>(minAge), static_cast<short>(maxAge));
     auto splayEnd = std::chrono::high_resolution_clock::now();
     auto splayDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(splayEnd - splayStart).count();
 
     auto skipStart = std::chrono::high_resolution_clock::now();
-    std::cout << "[Skip List Search] Querying patients between ages " << minAge << " and " << maxAge << "...\n";
+    std::vector<Patient> skipResults = skipList.search_age_range(minAge, maxAge);
     auto skipEnd = std::chrono::high_resolution_clock::now();
     auto skipDuration = std::chrono::duration_cast<std::chrono::nanoseconds>(skipEnd - skipStart).count();
 
-    std::cout << "\n[Patient Records Found (Mocked)]\n";
-    std::cout << "ID: 100001 | Age: 32 | Gender: Male | Condition: COPD | Billing: $29627.00\n";
-    std::cout << "ID: 100004 | Age: 37 | Gender: Male | Condition: Type 2 Diabetes | Billing: $42412.84\n";
+    std::cout << "\n[Patient Records Found: " << splayResults.size() << "]\n";
+    int printLimit = std::min((int)splayResults.size(), 5);
+    for(int i = 0; i < printLimit; i++) {
+        std::cout << "ID: " << splayResults[i].patient_id << " | Age: " << splayResults[i].age
+                  << " | Gender: " << splayResults[i].gender << " | Condition: " << splayResults[i].condition << "\n";
+    }
+    if (splayResults.size() > 5) {
+        std::cout << "... and " << splayResults.size() - 5 << " more patients.\n";
+    }
+
 
     std::cout << "\n==================================================\n";
     std::cout << "             PERFORMANCE COMPARISON\n";
     std::cout << "==================================================\n";
     std::cout << "Splay Tree Search Time : " << splayDuration << " nanoseconds\n";
+    std::cout << "Splay Nodes Traversed  : " << splayTree.getNodesTraversed() << "\n";
     std::cout << "Skip List Search Time  : " << skipDuration << " nanoseconds\n";
+    std::cout << "Skip List Nodes Traversed : " << skipList.get_nodes_traversed() << "\n";
     std::cout << "==================================================\n";
 }
 
 void runMenu() {
     bool isDatasetLoaded = false;
+    SplayTree splayTree;
+    SkipList skipList;
     std::cout << "Welcome to the Healthcare Database System!\n";
     std::cout << "This application compares Splay Tree and Skip List performance.\n\n";
 
@@ -164,7 +199,7 @@ void runMenu() {
             std::getline(std::cin, path);
 
             if (isValidFilePath(path)) {
-                if (loadDataset(path)) {
+                if (loadDataset(path, splayTree, skipList)) {
                     isDatasetLoaded = true;
                 }
                 else {
@@ -180,16 +215,16 @@ void runMenu() {
                 std::cout << "\nError: You must load the dataset first (Option 1)!\n";
             }
             else {
-                std::cout << "Enter Patient ID to lookup: ";
-                std::string inputID;
-                std::getline(std::cin, inputID);
-                int id = parseValidInt(inputID);
+                std::cout << "Enter Patient age to lookup: ";
+                std::string inputAge;
+                std::getline(std::cin, inputAge);
+                int age = parseValidInt(inputAge);
 
-                if (id == -1) {
-                    std::cout << "Error: Invalid Patient ID. Please enter a valid positive number.\n";
+                if (age == -1 || age < 0) {
+                    std::cout << "Error: Invalid Patient Age. Please enter a valid positive number.\n";
                 }
                 else {
-                    handleExactLookup(id);
+                    handleExactLookup(age, splayTree, skipList);
                 }
             }
         }
@@ -211,7 +246,7 @@ void runMenu() {
                     std::cout << "Error: Invalid age range. Ages must be positive and min age <= max age.\n";
                 }
                 else {
-                    handleRangeQuery(minAge, maxAge);
+                    handleRangeQuery(minAge, maxAge, splayTree, skipList);
                 }
             }
         }

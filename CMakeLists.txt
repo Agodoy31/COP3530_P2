@@ -36,4 +36,10 @@ add_executable(TestMenu
     test/test_menu.cpp 
     src/SplayTree.cpp
 )
+
+configure_file(
+        medical_patient_data.csv
+        medical_patient_data.csv
+        COPYONLY
+)
 target_link_libraries(TestMenu PRIVATE Catch2::Catch2WithMain)
